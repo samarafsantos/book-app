@@ -5,22 +5,41 @@ import { IoIosSearch } from "react-icons/io";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
-  height: 100vh;
+  height: 100%;
+  margin-top: 48px;
 `;
 
 const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 80%;
   padding: 24px;
   overflow: scroll;
+  max-height: 100vh;
   scroll-behavior: smooth;
   align-items: flex-start;
+  background-color: #f4f4f4;
+  color: #333;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  table {
+    border: 2px solid #6a5245c4;
+    width: 100%;
+  }
+
+  th {
+    border-bottom: 1px solid #6a5245c4;
+  }
+
+  td {
+    text-align: center;
   }
 `;
 
@@ -40,7 +59,7 @@ const Header = styled.div`
   align-items: center;
   position: relative;
   height: 70px;
-  background-color: #f4f4f4;
+  background-color: #6a5245c4;
   width: 100%;
 `;
 
@@ -68,15 +87,16 @@ const InputContainer = styled.div`
 `;
 
 const Text = styled.h2`
-  font-size: 18px;
+  font-size: 24px;
   color: #333;
   text-align: start;
   line-height: 70px;
   margin-left: 8px;
 `;
 
-export const ByPublisher = () => {
+export default function ByPublisher() {
   const [publisher, setPublisher] = useState("Penguin");
+  const [title, setTitle] = useState("Penguin");
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
@@ -93,6 +113,7 @@ export const ByPublisher = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        setTitle(publisher);
         setBooks(data);
       })
       .catch((error) => {
@@ -101,8 +122,8 @@ export const ByPublisher = () => {
   };
 
   return (
-    books && (
-      <Container>
+    books.length > 0 && (
+      <div id="publisher" style={{ paddingBottom: "48px" }}>
         <Header>
           <Text>Busque por editora:</Text>
           <InputContainer>
@@ -119,13 +140,21 @@ export const ByPublisher = () => {
             />
           </InputContainer>
         </Header>
-
-        <ListContainer id="list-container">
-          {books.map((book, i) => (
-            <div>{book.title}</div>
-          ))}
-        </ListContainer>
-      </Container>
+        <Container>
+          <ListContainer id="list-container">
+            <table>
+              <tr>
+                <th>Editora: {title}</th>
+              </tr>
+              {books.map((book: { title: string }, i: number) => (
+                <tr key={i}>
+                  <td>{book.title}</td>
+                </tr>
+              ))}
+            </table>
+          </ListContainer>
+        </Container>
+      </div>
     )
   );
-};
+}

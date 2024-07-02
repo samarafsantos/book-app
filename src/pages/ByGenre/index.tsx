@@ -5,22 +5,42 @@ import { IoIosSearch } from "react-icons/io";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
-  height: 100vh;
+  height: 100%;
+  padding-top: 48px;
+  padding-bottom: 48px;
 `;
 
 const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 80%;
   padding: 24px;
   overflow: scroll;
+  max-height: 100vh;
   scroll-behavior: smooth;
   align-items: flex-start;
+  background-color: #f4f4f4;
+  color: #333;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  table {
+    border: 2px solid #af8c716e;
+    width: 100%;
+  }
+
+  th {
+    border-bottom: 1px solid #af8c716e;
+  }
+
+  td {
+    text-align: center;
   }
 `;
 
@@ -40,7 +60,7 @@ const Header = styled.div`
   align-items: center;
   position: relative;
   height: 70px;
-  background-color: #f4f4f4;
+  background-color: #af8c716e;
   width: 100%;
 `;
 
@@ -68,14 +88,15 @@ const InputContainer = styled.div`
 `;
 
 const Text = styled.h2`
-  font-size: 18px;
+  font-size: 24px;
   color: #333;
   text-align: start;
   line-height: 70px;
   margin-left: 8px;
 `;
 
-export const ByGenre = () => {
+export default function ByGenre() {
+  const [title, setTitle] = useState("fantasy");
   const [genre, setGenre] = useState("fantasy");
   const [books, setBooks] = useState([]);
 
@@ -93,6 +114,7 @@ export const ByGenre = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        setTitle(genre);
         setBooks(data);
       })
       .catch((error) => {
@@ -102,7 +124,7 @@ export const ByGenre = () => {
 
   return (
     books && (
-      <Container>
+      <div id="genre">
         <Header>
           <Text>Busque por gênero:</Text>
           <InputContainer>
@@ -119,13 +141,21 @@ export const ByGenre = () => {
             />
           </InputContainer>
         </Header>
-
-        <ListContainer id="list-container">
-          {books.map((book, i) => (
-            <div key={i}>{book.title}</div>
-          ))}
-        </ListContainer>
-      </Container>
+        <Container>
+          <ListContainer id="list-container">
+            <table>
+              <tr>
+                <th>Gênero: {title}</th>
+              </tr>
+              {books.map((book: { title: string }, i: number) => (
+                <tr key={i}>
+                  <td>{book.title}</td>
+                </tr>
+              ))}
+            </table>
+          </ListContainer>
+        </Container>
+      </div>
     )
   );
-};
+}

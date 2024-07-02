@@ -1,14 +1,10 @@
-import mysql from "mysql2/promise";
+import { NextApiRequest, NextApiResponse } from "next";
+import connection from "./client";
 
-const connection = await mysql.createConnection({
-  host: "localhost",
-  user: "app-books",
-  password: "123456",
-  database: "Books",
-  port: 3306,
-});
-
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
     const response =
       await connection.query(`SELECT g.Genero,(SELECT COUNT(DISTINCT e.fk_Autor_Id)
@@ -19,7 +15,7 @@ export default async function handler(req, res) {
     WHERE t.fk_Genero_Id = g.Id)) AS Quantidade_Escritores
     FROM Genero g
     `);
-    let data = [];
+    let data: { genre: string; writersQty: string }[] = [];
     (response[0] as Array<any>).forEach((book) => {
       const b = {
         genre: book.Genero,
@@ -30,6 +26,6 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   } catch (error) {
     console.error("Error retrieving data:", error);
-    res.status(500).json([]);
+    throw error;
   }
 }

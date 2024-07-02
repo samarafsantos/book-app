@@ -35,11 +35,14 @@ const Flex = styled.div`
 `;
 
 const Title = styled.p`
+  color: #333;
   font-size: 14px;
   text-align: center;
 `;
 const Subtitle = styled.p`
   font-size: 12px;
+  text-align: center;
+  color: #7a7a7a;
 `;
 
 const bookInfo = {
@@ -66,6 +69,7 @@ const bookInfo = {
 };
 
 interface Book {
+  author: string;
   title: string;
   rating: string;
   language: string;
@@ -83,7 +87,7 @@ export const BookCard = (props: { book: Book }) => {
     Star.push(<MdOutlineStar key={i} size={24} color="orange" />);
   }
 
-  const formatTitle = (title) => {
+  const formatTitle = (title: String) => {
     return title.slice(0, 25);
   };
 
@@ -93,11 +97,10 @@ export const BookCard = (props: { book: Book }) => {
     fetch(`https://bookcover.longitood.com/bookcover/${book.isbn}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(">>>>>imageUrl", data.url);
         setImgUrl(data.url);
       })
       .catch((error) => {
-        console.error("Erro ao buscar imagem", error);
+        console.error("[BookCard] Erro ao buscar imagem", error);
       });
   }, [book]);
 
@@ -105,8 +108,8 @@ export const BookCard = (props: { book: Book }) => {
     imgUrl && (
       <Container>
         <a data-tooltip-id={book.isbn}>
-          <Tooltip id={book.isbn} effect="solid">
-            <span>{book.title}</span>
+          <Tooltip id={book.isbn}>
+            <span>Gêneros: {bookInfo.genres.join(", ")}</span>
           </Tooltip>
           <Image
             className="book-cover"
@@ -121,31 +124,14 @@ export const BookCard = (props: { book: Book }) => {
         <Title>
           {titleFormatted} {book.title.length > 15 ? "[...]" : ""}
         </Title>
-        {/* <Subtitle>Autor(a): {bookInfo.author}</Subtitle> */}
+        <Subtitle>Autor(a): {book.author}</Subtitle>
         <Flex>
           {Star.map((star) => star)}
           <Subtitle>({book.rating})</Subtitle>
         </Flex>
         <Subtitle>Páginas: {book.pages}</Subtitle>
-        {/* <Subtitle>Editora: {bookInfo.publisher}</Subtitle> */}
+        <Subtitle>Editora: {bookInfo.publisher}</Subtitle>
       </Container>
     )
   );
 };
-
-/**
- * 
- * <a data-tooltip-id="my-tooltip">
-          <Tooltip id="my-tooltip" effect="solid">
-          <span>Gêneros: {bookInfo.genres.join(", ")}</span>
-        </Tooltip>
-          <Image
-            className="book-cover"
-            src={imgUrl}
-            alt="book-cover"
-            width={180}
-            height={275}
-            priority
-          />
-        </a>
- */

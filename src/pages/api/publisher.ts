@@ -1,23 +1,27 @@
-import mysql from "mysql2/promise";
+import { NextApiRequest, NextApiResponse } from "next";
+import connection from "./client";
 
-const connection = await mysql.createConnection({
-  host: "localhost",
-  user: "app-books",
-  password: "123456",
-  database: "Books",
-  port: 3306,
-});
-
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const publisher = req.body;
   try {
     const response = await connection.query(`SELECT L.Titulo, E.Nome
     FROM Livro L
     INNER JOIN Publica P ON L.ISBN_13 = P.fk_Livro_ISBN_13
     INNER JOIN Editora E ON P.fk_Editora_Id = E.Id
-    WHERE E.NOME like '%${publisher}%' limit 10;
+    WHERE E.NOME like '%${publisher}%';
     `);
-    let data = [];
+    let data: {
+      title: any;
+      rating: any;
+      language: any;
+      isbn: any;
+      year: any;
+      pages: any;
+      publishedDate: any;
+    }[] = [];
     (response[0] as Array<any>).forEach((book) => {
       const b = {
         title: book.Titulo,
@@ -33,6 +37,6 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   } catch (error) {
     console.error("Error retrieving data:", error);
-    res.status(500).json([]);
+    throw error;
   }
 }

@@ -5,10 +5,10 @@ import { IoIosSearch } from "react-icons/io";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
-  height: 100vh;
+  height: 100%;
+  padding-top: 48px;
 `;
 
 const ListContainer = styled.div`
@@ -17,10 +17,29 @@ const ListContainer = styled.div`
   gap: 24px;
   padding: 24px;
   overflow: scroll;
+  min-width: 80%;
+  max-height: 100vh;
   scroll-behavior: smooth;
   align-items: flex-start;
+  background-color: #f4f4f4;
+  color: #333;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+    rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  table {
+    border: 2px solid #8a533bad;
+    width: 100%;
+  }
+
+  th {
+    border-bottom: 1px solid #8a533bad;
+  }
+
+  td {
+    text-align: center;
   }
 `;
 
@@ -40,7 +59,7 @@ const Header = styled.div`
   align-items: center;
   position: relative;
   height: 70px;
-  background-color: #f4f4f4;
+  background-color: #8a533bad;
   width: 100%;
 `;
 
@@ -68,14 +87,15 @@ const InputContainer = styled.div`
 `;
 
 const Text = styled.h2`
-  font-size: 18px;
+  font-size: 24px;
   color: #333;
   text-align: start;
   line-height: 70px;
   margin-left: 8px;
 `;
 
-export const ByAuthor = () => {
+export default function ByAuthor() {
+  const [title, setTitle] = useState("William Shakespeare");
   const [author, setAuthor] = useState("William Shakespeare");
   const [books, setBooks] = useState([]);
 
@@ -94,6 +114,7 @@ export const ByAuthor = () => {
       .then((response) => response.json())
       .then((data) => {
         setBooks(data);
+        setTitle(author);
       })
       .catch((error) => {
         console.error("Erro ao buscar livros:", error);
@@ -102,9 +123,9 @@ export const ByAuthor = () => {
 
   return (
     books && (
-      <Container>
+      <div id="author" style={{ paddingBottom: "48px" }}>
         <Header>
-          <Text>Busque por autor:</Text>
+          <Text>Busque por autor(a):</Text>
           <InputContainer>
             <Input
               type="text"
@@ -119,13 +140,21 @@ export const ByAuthor = () => {
             />
           </InputContainer>
         </Header>
-
-        <ListContainer id="list-container">
-          {books.map((book, i) => (
-            <div key={i}>{book.title}</div>
-          ))}
-        </ListContainer>
-      </Container>
+        <Container>
+          <ListContainer id="list-container">
+            <table>
+              <tr>
+                <th>Livros do Autor(a): {title}</th>
+              </tr>
+              {books.map((book: { title: string }, i: number) => (
+                <tr key={i}>
+                  <td>{book.title}</td>
+                </tr>
+              ))}
+            </table>
+          </ListContainer>
+        </Container>
+      </div>
     )
   );
-};
+}
